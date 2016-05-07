@@ -35,7 +35,7 @@ function davcnaStopnja(izvajalec, zanr) {
     case "Justin Bieber":
       return 22;
     default:
-      break;
+      return 9.5;
   }
   switch (zanr) {
     case "Metal": case "Heavy Metal": case "Easy Listening":
@@ -196,6 +196,7 @@ var vrniRacune = function(callback) {
 }
 
 // Registracija novega uporabnika
+var izpisiSporocilo ="";
 streznik.post('/prijava', function(zahteva, odgovor) {
   var form = new formidable.IncomingForm();
   
@@ -209,21 +210,28 @@ streznik.post('/prijava', function(zahteva, odgovor) {
     	  Phone, Fax, Email, SupportRepId) \
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
       //TODO: add fields and finalize
-      //stmt.run("", "", "", "", "", "", "", "", "", "", "", 3); 
-      //stmt.finalize();
+      stmt.run(polja.FirstName,polja.LastName,polja.Company,polja.Address,polja.City,polja.State,polja.Country,polja.PostalCode,polja.Phone, polja.Fax,polja.Email,3); 
+      stmt.finalize();
     } catch (err) {
       napaka2 = true;
     }
-  
+    if (napaka2||napaka1){
+      izpisiSporocilo="Prišlo je do napake pri registraciji nove stranke. Prosim preverite vnešene podatke in poskusite znova";
+    }
+    else{
+      izpisiSporocilo="Stranka je bila uspešno registrirana";
+    }
+    odgovor.redirect('/prijava');
     odgovor.end();
   });
 })
 
 // Prikaz strani za prijavo
+
 streznik.get('/prijava', function(zahteva, odgovor) {
   vrniStranke(function(napaka1, stranke) {
       vrniRacune(function(napaka2, racuni) {
-        odgovor.render('prijava', {sporocilo: "", seznamStrank: stranke, seznamRacunov: racuni});  
+        odgovor.render('prijava', {sporocilo: izpisiSporocilo, seznamStrank: stranke, seznamRacunov: racuni});  
       }) 
     });
 })
