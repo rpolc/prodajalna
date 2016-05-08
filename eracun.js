@@ -60,7 +60,11 @@ streznik.get('/', function(zahteva, odgovor) {
           GROUP BY Track.TrackId \
           ORDER BY steviloProdaj DESC, pesem ASC \
           LIMIT 100", function(napaka, vrstice) {
-    if (napaka)
+            
+    if(zahteva.session.stranka==null){
+      odgovor.redirect("/prijava");
+    }  
+    else if (napaka)
       odgovor.sendStatus(500);
     else {
         for (var i=0; i<vrstice.length; i++)
@@ -247,6 +251,7 @@ streznik.post('/stranka', function(zahteva, odgovor) {
 
 // Odjava stranke
 streznik.post('/odjava', function(zahteva, odgovor) {
+    zahteva.session.stranka==null;
     odgovor.redirect('/prijava') 
 })
 
